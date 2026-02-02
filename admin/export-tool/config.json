@@ -1,0 +1,18 @@
+{
+  "_comment": "Configuration for FormSeal export tool",
+
+  "base_url": "https://example.com",
+  "_base_url_note": "Base URL of the FormSeal deployment (no trailing slash)",
+
+  "export_request_path": "/api/export-request",
+  "_export_request_path_note": "Must match the export-request endpoint exposed by FormSeal",
+
+  "exports_dir": "exports",
+  "_exports_dir_note": "Local directory where encrypted export files will be saved",
+
+  "filename_prefix": "export",
+  "_filename_prefix_note": "Prefix used for generated export filenames",
+
+  "filename_extension": ".jsonl",
+  "_filename_extension_note": "Export format (newline-delimited JSON)"
+}

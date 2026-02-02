@@ -1,0 +1,12 @@
+{
+  "_comment": "Configuration for cleanup tool",
+
+  "export_dir": "../export-tool/exports",
+  "_export_dir_note": "Directory containing encrypted export files",
+
+  "data_dir": "../data",
+  "_data_dir_note": "Directory containing message-meta.jsonl for deduplication",
+
+  "dry_run": true,
+  "_dry_run_note": "If true, no files are deleted; only reports what would be removed"
+}

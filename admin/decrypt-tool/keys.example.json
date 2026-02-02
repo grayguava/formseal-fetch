@@ -1,0 +1,9 @@
+{
+  "_comment": "Administrator X25519 keypair for decrypting FormSeal submissions",
+
+  "x25519_public": "BASE64URL_ENCODED_PUBLIC_KEY",
+  "_x25519_public_note": "Public key corresponding to the encryption target used by FormSeal",
+
+  "x25519_private": "BASE64URL_ENCODED_PRIVATE_KEY",
+  "_x25519_private_note": "Private key used ONLY for local decryption; never upload or commit"
+}

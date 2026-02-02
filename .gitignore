@@ -1,0 +1,11 @@
+**/keys.json
+.env
+data/
+export-tool/exports/
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+*.bat
+*.cmd
+exports/

@@ -1,0 +1,30 @@
+│   .gitattributes
+│   .gitignore
+│   LICENSE
+│
+└───admin
+    │   README.md
+    │   sync.py
+    │
+    ├───cleanup-tool
+    │       cleanup-exports.py
+    │       config.json
+    │       README.md
+    │
+    ├───data
+    │       export-meta.jsonl
+    │       inbox.jsonl
+    │       message-meta.jsonl
+    │
+    ├───decrypt-tool
+    │       config.json
+    │       decrypt-and-split.py
+    │       keys.json
+    │       README.md
+    │
+    └───export-tool
+        │   config.json
+        │   fetch-export.py
+        │   README.md
+        │
+        └───exports
