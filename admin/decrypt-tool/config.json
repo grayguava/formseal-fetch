@@ -1,9 +1,0 @@
-{
-  "_comment": "Configuration for FormSeal decrypt-and-split tool",
-
-  "input_dir": "../export-tool/exports",
-  "_input_dir_note": "Directory containing encrypted .jsonl export files",
-
-  "data_dir": "../data",
-  "_data_dir_note": "Directory where decrypted inbox and metadata files will be written"
-}
