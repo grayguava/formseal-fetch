@@ -1,5 +1,4 @@
-# cli/providers/cloudflare/storage/kv.py
-# Cloudflare KV storage adapter
+# Cloudflare KV storage
 
 import json
 import urllib.request
@@ -53,7 +52,7 @@ def fetch(namespace, account_id, token, output_path):
         if not cursor:
             break
 
-    info(f"Found {len(all_keys)} keys")
+    info(f"Found {len(all_keys)} entries")
 
     if not all_keys:
         info("No data to fetch.")

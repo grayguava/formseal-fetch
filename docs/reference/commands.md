@@ -1,151 +1,198 @@
-# Commands
+# Commands reference
+
+Complete reference for all formseal-fetch commands.
+
+## Usage syntax
+
+```bash
+fsf <command> [options] [arguments]
+```
+
+## Commands
+
+### connect
+
+Connect to a storage backend.
+
+```bash
+fsf connect provider:<name> [namespace:<id>] [token:<value>] [output:<path>]
+```
+
+**Arguments:**
+
+| Argument | Description |
+|----------|-------------|
+| `provider:<name>` | Storage provider (required) — available: `cloudflare` |
+| `namespace:<id>` | Storage-specific namespace ID (optional) |
+| `token:<value>` | API token (optional — you'll be prompted if not provided) |
+| `output:<path>` | Output folder for ciphertexts (optional, default: `data`) |
+
+**Examples:**
+
+```bash
+# Interactive mode — you'll be prompted for all required values
+fsf connect provider:<name>
+
+# Non-interactive — all values provided via arguments
+fsf connect provider:<name> namespace:<id> token:<value> output:<path>
+
+# Specify only namespace, enter token interactively
+fsf connect provider:<name> namespace:<id>
+```
+
+**Interactive prompts:**
+
+When running without all arguments, you'll be prompted for:
+1. KV Namespace ID (required for Cloudflare)
+2. Account API Token (required)
+3. Output Folder (optional, default: `data`)
+
+Press `Ctrl+C` at any prompt to cancel.
 
 ---
 
-## Setup
+### fetch
 
-### fsync setup quick
-
-Interactive wizard to configure the storage backend.
+Download ciphertexts from your connected backend.
 
 ```bash
-fsync setup quick
+fsf fetch [--output <path>]
 ```
 
-Prompts for:
-- Provider (storage backend)
-- Storage type
-- Provider-specific settings (namespace ID, URL, etc.)
-- Output folder
+**Options:**
 
-### fsync setup sync
+| Option | Description |
+|--------|-------------|
+| `--output` | Custom output file path (default: `<output_folder>/ciphertexts.jsonl`) |
 
-Set the sync interval in minutes.
+**Examples:**
 
 ```bash
-fsync setup sync
+# Use default output folder
+fsf fetch
+
+# Custom output file
+fsf fetch --output my-data.jsonl
 ```
 
-Default: 15 minutes.
+**Output format:**
 
-### fsync setup reset
+Ciphertexts are saved as plain text — one raw ciphertext per line, no JSON formatting:
 
-Clear all configuration.
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+eyJraWQiOiIxMjM0NTY3ODkwIn0...
+```
+
+**Deduplication:**
+
+If you run `fsf fetch` multiple times, duplicates are automatically skipped based on ciphertext content. The output shows:
+- Number of new ciphertexts saved
+- Number of duplicates skipped
+
+---
+
+### status
+
+Show current connection status and configuration.
 
 ```bash
-fsync setup reset
+fsf status
+```
+
+**Output includes:**
+
+- Provider name (e.g., "Cloudflare")
+- KV Namespace ID (truncated)
+- Storage location (OS Keychain or Config File)
+- Account ID (truncated from API)
+- API Token status (**** if set)
+- Output folder path
+
+---
+
+### set
+
+Set a configuration value.
+
+```bash
+fsf set <key> <value>
+```
+
+**Arguments:**
+
+| Key | Description |
+|-----|-------------|
+| `output_folder` | Path where ciphertexts are saved |
+
+**Examples:**
+
+```bash
+fsf set output_folder my-data
 ```
 
 ---
 
-## Sync
+### disconnect
 
-### fsync sync start
-
-Start the background sync daemon. Returns immediately — runs detached.
+Clear all credentials and configuration.
 
 ```bash
-fsync sync start
+fsf disconnect
 ```
 
-### fsync sync stop
+**What it removes:**
 
-Stop the background sync daemon.
+- Provider configuration
+- API token (from OS Keychain or secrets.json)
+- KV namespace ID (from OS Keychain or secrets.json)
+- Configuration file
 
-```bash
-fsync sync stop
-```
+**What it does NOT remove:**
 
-### fsync sync status
+- Downloaded ciphertexts in your output folder
 
-Show daemon status, PID, interval, last sync time, and recent logs.
+**Confirmation:**
 
-```bash
-fsync sync status
-```
-
-### fsync sync run
-
-Run sync once in the foreground. Useful for testing or one-time fetches.
-
-```bash
-fsync sync run
-```
+You'll be prompted to confirm with `y` or `n`. Press `Enter` to cancel.
 
 ---
 
-## Fetch
-
-### fsync fetch
-
-Download ciphertexts from the configured backend.
-
-```bash
-fsync fetch                    # Uses config's output_folder
-fsync fetch --output custom.j  # Custom output path
-```
-
----
-
-## Config
-
-### fsync status
-
-Show current configuration.
-
-```bash
-fsync status
-```
-
-Shows provider, storage settings, output folder, and credential status.
-
-### fsync set
-
-Set a config value directly.
-
-```bash
-fsync set provider cloudflare
-fsync set output_folder C:/data
-fsync set sync_interval 5
-```
-
-### fsync logout
-
-Clear all stored configuration.
-
-```bash
-fsync logout
-```
-
----
-
-## Other
-
-### fsync --help
-
-Show all available commands.
-
-```bash
-fsync --help
-```
-
-### fsync help --vars
-
-Show environment variable setup instructions for your OS.
-
-```bash
-fsync help --vars             # Auto-detect OS
-fsync help --vars-windows     # Windows
-fsync help --vars-macos       # macOS
-fsync help --vars-linux       # Linux
-```
-
-### fsync providers
+### providers
 
 List available storage backends.
 
 ```bash
-fsync providers
-fsync providers --cloudflare
-fsync providers --supabase
+fsf providers
 ```
+
+**Currently supported:**
+
+| Provider | Status |
+|----------|--------|
+| Cloudflare KV | Available |
+| Supabase | Coming soon |
+
+---
+
+### --help
+
+Show help information.
+
+```bash
+fsf --help
+```
+
+Displays all available commands grouped by category (Connect, Fetch, Config, Info).
+
+---
+
+### --about
+
+Show project information.
+
+```bash
+fsf --about
+```
+
+Displays version and repository URL.

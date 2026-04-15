@@ -1,44 +1,38 @@
-# cli/commands/config.py
-# Config management commands
-# Sensitive data: user must set via env vars manually
+# Config management
 
 import json
+import sys
 from pathlib import Path
 
 from cli.ui import br, fail, ok, info, warn, G, W, D, C, Y, R
+from cli.security import tokens
 
 
-CONFIG_DIR  = Path.home() / ".formsealdaemon"
+def _load_version():
+    p = Path(__file__).parent.parent.parent / "version.txt"
+    if p.exists():
+        return p.read_text().strip()
+    return "dev"
+
+
+VERSION = _load_version()
+
+
+CONFIG_DIR = Path.home() / ".config" / "formseal-fetch"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 
-# Env var names for sensitive data
-ENV_KEYS = {
-    "cloudflare": {
-        "token": "FSYNC_CF_TOKEN",
-    },
-    "supabase": {
-        "key": "FSYNC_SU_KEY",
-    },
-}
 
-# Config keys (non-sensitive)
 VALID_PROVIDERS = {
-    "cloudflare": {
-        "namespace": "KV namespace ID",
-    },
-    "supabase": {
-        "url": "Supabase project URL",
-    },
+    "cloudflare": {},
 }
 
-# Global config keys
 VALID_GLOBAL = {
     "output_folder": "Output folder path",
-    "sync_interval": "Sync interval in minutes (default: 15)",
 }
 
 
 def load_config():
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     if CONFIG_FILE.exists():
         return json.loads(CONFIG_FILE.read_text())
     return {}
@@ -49,201 +43,152 @@ def save_config(cfg):
     CONFIG_FILE.write_text(json.dumps(cfg, indent=2))
 
 
-def get_token(provider):
-    """Get token from env var."""
-    import os
-    env_key = ENV_KEYS.get(provider, {}).get("token") or ENV_KEYS.get(provider, {}).get("key")
-    if env_key:
-        val = os.environ.get(env_key)
-        return val
-    return None
+def get_token(provider: str):
+    return tokens.load_token(provider)
+
+
+def get_namespace(provider: str):
+    return tokens.load_namespace(provider)
 
 
 def run_set(args):
     if len(args) < 2:
-        fail("Usage: fsync set <key> <value>\n\nExample:\n  fsync set provider cloudflare\n  fsync set namespace <id>\n  fsync set output_folder <path>\n  fsync set sync_interval 15\n\nOr set env vars manually:\n  $env:FSYNC_CF_TOKEN=\"cfut_...\"")
+        fail("Usage: fsf set <key> <value>")
 
     key = args[0]
     value = " ".join(args[1:])
 
     cfg = load_config()
 
-    # Handle provider switch
     if key == "provider":
         if value not in VALID_PROVIDERS:
             fail(f"Unknown provider: {value}\nValid: {', '.join(VALID_PROVIDERS.keys())}")
-
-        old_provider = cfg.get("provider")
-        if old_provider and old_provider != value:
-            for k in list(cfg.keys()):
-                if k.startswith(old_provider + "."):
-                    del cfg[k]
-
         cfg["provider"] = value
         save_config(cfg)
-
         br()
         ok(f"Provider set to {value}")
         br()
         return
 
-    # Handle global keys (not provider-specific)
     if key in VALID_GLOBAL:
-        if key == "output_folder":
-            cfg["output_folder"] = value
-        elif key == "sync_interval":
-            try:
-                cfg["sync_interval"] = int(value)
-            except ValueError:
-                fail("sync_interval must be a number")
+        cfg[key] = value
         save_config(cfg)
         br()
         ok(f"Set {key} = {value}")
         br()
         return
 
-    # Validate key - check if it's a sensitive token/key
-    provider = cfg.get("provider")
-    if not provider:
-        fail("No provider set. Run: fsync set provider <cloudflare|supabase>")
-
-    # Check if this key is sensitive (should be env var)
-    env_key = ENV_KEYS.get(provider, {}).get(key)
-    if env_key:
-        br()
-        info(f"Set {key} via env var instead:")
-        print(f"  {W}Windows:{R} $env:{env_key}=\"<token>\"")
-        print(f"  {W}Linux/Mac:{R} export {env_key}=\"<token>\"")
-        br()
-        warn("Tokens are not stored in config for security.")
-        br()
-        return
-
-    # Non-sensitive key - save to config
-    valid_key = f"{provider}.{key}"
-    if key not in VALID_PROVIDERS.get(provider, {}):
-        fail(f"Unknown key: {key}\n\nValid keys for {provider}:\n" +
-             "\n".join(f"  {k}: {v}" for k, v in VALID_PROVIDERS[provider].items()) +
-             "\n\nGlobal keys:\n" +
-             "\n".join(f"  {k}: {v}" for k, v in VALID_GLOBAL.items()))
-
-    cfg[valid_key] = value
-    save_config(cfg)
-
-    br()
-    ok(f"Set {key} = {value}")
-    br()
+    fail(f"Unknown key: {key}")
 
 
 def run_status():
-    import os
-
     cfg = load_config()
 
     br()
-    print(f"{C} \u250c\u2500 {R}{W}formseal-sync{R}  {G}status{R}")
+    print(f"{C} \u250c\u2500 {R}{W}formseal-fetch{R}  {Y}v{VERSION}{R}")
     print(G + " " + "\u2500" * 52 + R)
+    br()
+
+    print(f"  {D}Configuration Status:{R}")
     br()
 
     provider = cfg.get("provider")
     if not provider:
-        warn("No provider configured. Run: fsync configure quick")
+        warn("No provider configured. Run: fsf connect provider:<name>")
         br()
         return
 
-    print(f"  {W}provider:{R}   {W}{provider}{R}")
-    br()
+    def row(label, value, color=W):
+        print(f"  {D}{label:<26}{R}{color}{value}{R}")
 
-    # Provider-specific config (account/storage details)
-    pcfg = {k.replace(f"{provider}.", ""): v for k, v in cfg.items() if k.startswith(f"{provider}.")}
+    row("Provider:", "Cloudflare")
 
     if provider == "cloudflare":
-        namespace = pcfg.get("namespace")
+        namespace = get_namespace(provider)
         token = get_token(provider)
-        
-        print(f"  namespace:  {W if namespace else D}{namespace or '(not set)'}{R}")
-        
-        import os
-        env_key = ENV_KEYS.get(provider, {}).get("token")
-        env_set = env_key in os.environ and os.environ.get(env_key)
-        
-        if env_set and token:
-            # Try to get and show partial account ID
+
+        row("KV Namespace ID:", namespace or "(not set)", W if namespace else D)
+        if namespace:
+            row("NS-ID Location:", tokens.namespace_location(provider), G)
+
+        if token:
             try:
                 from cli.providers.cloudflare.account import get_account_id
                 account_id = get_account_id(token)
                 partial = account_id[:12] + "..." if len(account_id) > 12 else account_id
-                print(f"  account:    {G}{partial}{R}")
-            except Exception as e:
-                print(f"  account:    {R}(auth error){R}")
-                print(f"  {D}Token may need 'account:read' scope{R}")
-            print(f"  token:      {W}****{R}")
-        elif env_set:
-            print(f"  token:      {D}(value empty){R}")
-            print(f"  account:    {D}(set token to detect){R}")
+                row("Account ID:", partial, G)
+            except Exception:
+                row("Account ID:", "(auth error)", R)
+            row("API Token:", "****")
+            row("Token Location:", tokens.token_location(provider), G)
         else:
-            print(f"  token:      {D}(not set - env var {env_key}){R}")
-            print(f"  account:    {D}(set token to detect){R}")
-        
-        print(f"  storage:    kv")
-    else:  # supabase
-        url = pcfg.get("url")
-        token = get_token(provider)
-        
-        print(f"  url:        {W if url else D}{url or '(not set)'}{R}")
-        print(f"  token:      {W if token else D}{'****' if token else '(not set)'}{R}")
-        print(f"  storage:    db")
+            row("API Token:", "(not set)", D)
+            row("Token Location:", "Not set", D)
+
+        br()
+        row("Server Storage Type:", "Key-Value")
+
+    else:
+        fail(f"Unknown provider: {provider}")
+
+    output_folder = cfg.get("output_folder")
+    row("Output Folder:", output_folder or "(not set)", W if output_folder else D)
 
     br()
-
-    # Global config
-    output_folder = cfg.get("output_folder")
-    print(f"  output_folder:  {W if output_folder else D}{output_folder or '(not set)'}{R}")
-
-    sync_interval = cfg.get("sync_interval")
-    print(f"  sync_interval:   {W if sync_interval else D}{sync_interval or '(not set)'}{R}")
-
-    if cfg.get("last_sync"):
-        print(f"  last_sync:      {W}{cfg['last_sync']}{R}")
 
     br()
 
 
 def run_config_show():
-    import os
-
     cfg = load_config()
 
     br()
-    print(f"{C} \u250c\u2500 {R}{W}formseal-sync{R}  {G}config{R}")
+    print(f"{C} \u250c\u2500 {R}{W}formseal-fetch{R}  {G}config{R}")
     print(G + " " + "\u2500" * 52 + R)
     br()
 
     provider = cfg.get("provider")
 
     if not cfg:
-        info("No config. Run: fsync set provider <cloudflare|supabase>")
+        info("No config. Run: fsf connect provider:<name>")
     else:
         for k, v in cfg.items():
             print(f"  {D}{k}:{R}  {W}{v}{R}")
 
-    # Show env var status
     if provider:
         token = get_token(provider)
-        env_key = ENV_KEYS.get(provider, {}).get("token") or ENV_KEYS.get(provider, {}).get("key")
-        print(f"  {D}{env_key}:{R}  {'****' if token else 'not set'}")
+        print(f"  {D}token:{R}  {'****' if token else 'not set'}")
 
     br()
 
 
-def run_logout():
+def run_disconnect():
+    br()
+    print(f"  {Y}This will delete all config and credentials.{R}")
+    print(f"  Downloaded ciphertexts will NOT be affected.")
+    br()
+    sys.stdout.write(f"  Continue? [y/N]: ")
+    sys.stdout.flush()
+    confirm = input().strip().lower()
+    
+    if confirm != "y":
+        br()
+        info("Cancelled.")
+        br()
+        return
+    
+    cfg = load_config()
+    provider = cfg.get("provider")
+    
     if CONFIG_FILE.exists():
         CONFIG_FILE.unlink()
-        br()
-        ok("Config cleared. Manually unset env vars:")
-        print("  $env:FSYNC_CF_TOKEN=$null")
-        br()
-    else:
-        br()
-        info("No config to clear.")
-        br()
+    
+    if provider:
+        tokens.clear_all(provider)
+    
+    br()
+    ok("Disconnected. All config and credentials cleared.")
+    br()
+
+
+run_logout = run_disconnect

@@ -1,4 +1,3 @@
-# cli/providers/cloudflare/account.py
 # Cloudflare account authentication
 
 import json
@@ -23,6 +22,10 @@ def get_account_id(token):
     if not token:
         raise TokenError("Token is empty")
     
+    token = token.strip()
+    if not token:
+        raise TokenError("Token is blank after stripping whitespace")
+    
     req = urllib.request.Request(
         "https://api.cloudflare.com/client/v4/accounts",
         headers={"Authorization": f"Bearer {token}"}
@@ -32,14 +35,8 @@ def get_account_id(token):
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read().decode())
     except urllib.error.HTTPError as e:
-        if e.code == 401:
-            raise AuthError("Invalid token (unauthorized)")
-        elif e.code == 403:
-            raise AuthError("Token lacks required permissions")
-        elif e.code == 429:
-            raise AuthError("Rate limit exceeded")
-        else:
-            raise AuthError(f"HTTP {e.code}: {e.reason}")
+        body = e.read().decode("utf-8", errors="replace")
+        raise AuthError(f"HTTP {e.code}: {body}")
     except json.JSONDecodeError as e:
         raise AuthError(f"Invalid API response: {e}")
     except urllib.error.URLError as e:

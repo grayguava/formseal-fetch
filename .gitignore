@@ -33,3 +33,5 @@ build/
 
 # Config
 .formsealdaemon/
+*tree
+tree
