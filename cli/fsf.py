@@ -10,10 +10,16 @@ from cli.commands.config import run_status, run_set, run_disconnect
 from cli.commands.setup import run as run_connect
 from cli.commands.fetch import run as run_fetch
 from cli.commands.providers import run as run_providers
+from cli.providers import get_providers
 
 
 def _load_version():
-    p = Path(__file__).parent.parent / "version.txt"
+    if getattr(sys, 'frozen', False):
+        base = Path(sys._MEIPASS)
+    else:
+        base = Path(__file__).parent.parent
+    
+    p = base / "version.txt"
     if p.exists():
         return p.read_text().strip()
     return "dev"
@@ -32,27 +38,33 @@ COMMANDS = {
 }
 
 
-HELP_GROUPS = {
-    "Connect": [
-        ("fsf connect provider:<name>", "connect to a storage provider"),
-        ("fsf disconnect", "clear configuration"),
-    ],
-    "Fetch": [
-        ("fsf fetch", "download ciphertexts"),
-        ("fsf fetch --output <file>", "custom output path"),
-    ],
-    "Config": [
-        ("fsf status", "show configuration"),
-        ("fsf set <key> <value>", "set config value"),
-    ],
-    "Info": [
-        ("fsf providers", "list available providers"),
-        ("fsf --about", "show project info"),
-    ],
-    "Docs": [
-        ("https://github.com/formseal/formseal-fetch", None),
-    ],
-}
+def _get_help_groups():
+    providers = get_providers()
+    provider_list = ", ".join(p.display_name for p in providers.values())
+    return {
+        "Connect": [
+            ("fsf connect provider:<name>", "connect to a storage provider"),
+            ("fsf disconnect", "clear configuration"),
+        ],
+        "Fetch": [
+            ("fsf fetch", "download ciphertexts"),
+            ("fsf fetch --output <file>", "custom output path"),
+        ],
+        "Config": [
+            ("fsf status", "show configuration"),
+            ("fsf set <key> <value>", "set config value"),
+        ],
+        "Info": [
+            ("fsf providers", "list available providers"),
+            ("fsf --about", "show project info"),
+        ],
+        "Docs": [
+            ("https://github.com/grayguava/formseal-fetch", None),
+        ],
+    }
+
+
+HELP_GROUPS = _get_help_groups()
 
 
 def _show_help():
@@ -79,7 +91,7 @@ def _show_about():
     br()
     print(f"  {W}formseal-fetch{R} - CLI for fetching encrypted form submissions")
     br()
-    print(f"  {G}Repository:{R}  https://github.com/formseal/formseal-fetch")
+    print(f"  {G}Repository:{R}  https://github.com/grayguava/formseal-fetch")
     br()
 
 

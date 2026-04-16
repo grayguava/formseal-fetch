@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/formseal-ecosystem-10b981?style=flat&labelColor=1e293b">
 </p>
 
-Download encrypted form submissions from your storage backend for offline decryption.
+Download encrypted form submissions from your storage backend.
 
 ## What it does
 
@@ -17,16 +17,19 @@ Browser (formseal-embed)
   Storage (Cloudflare KV / Supabase / ...)
        │
        ▼ (fsf fetch)
-  Your PC ──► ciphertexts.jsonl
-       │
-       ▼ (decrypt offline)
-  Plaintext form data
+  ciphertexts.jsonl ──► Your PC
 ```
 
 ## Install
 
 ```bash
-pip install formseal-fetch
+pipx install fsf
+```
+
+Or with pip:
+
+```bash
+pip install fsf
 ```
 
 ## Quick start
@@ -41,7 +44,6 @@ fsf status
 
 - **Secure storage** : Credentials stored in OS keychain (Windows Credential Manager / macOS Keychain / Linux Secret Service)
 - **Deduplication** : Skips already-downloaded ciphertexts automatically
-- **Offline-capable** ; Decrypt downloaded data anytime without network access
 
 ## Commands
 

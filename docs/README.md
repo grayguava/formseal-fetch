@@ -27,8 +27,5 @@ Browser (formseal-embed)
   Cloudflare KV
        │
        ▼ (fsf fetch)
-  Your PC ──► ciphertexts.jsonl
-       │
-       ▼ (decrypt offline)
-  Plaintext form data
+  ciphertexts.jsonl ──► Your PC
 ```
