@@ -23,13 +23,13 @@ Browser (formseal-embed)
 ## Install
 
 ```bash
-pipx install fsf
+pipx install formseal-fetch
 ```
 
 Or with pip:
 
 ```bash
-pip install fsf
+pip install formseal-fetch
 ```
 
 ## Quick start

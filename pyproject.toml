@@ -3,7 +3,7 @@ requires = ["setuptools>=65.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fsf"
+name = "formseal-fetch"
 version = "2.1.0"
 description = "CLI tool for fetching encrypted form submissions"
 readme = "README.md"
