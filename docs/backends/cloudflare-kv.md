@@ -47,7 +47,7 @@ fsf connect provider:cloudflare
 
 You'll be prompted for:
 - KV Namespace ID
-- Account API Token
+- API Token
 - Output folder (default: `data`)
 
 ### Non-interactive mode

@@ -11,7 +11,7 @@ Welcome to the formseal-fetch documentation.
 | [Commands Reference](./reference/commands.md) | All available commands |
 | [Configuration](./reference/configuration.md) | Config files and storage |
 | [Cloudflare KV](./backends/cloudflare-kv.md) | Cloudflare backend setup |
-| [Supabase](./backends/supabase.md) | Supabase backend (coming soon) |
+| [Supabase](./backends/supabase.md) | Supabase backend setup |
 | [Troubleshooting](./troubleshooting.md) | Common issues and solutions |
 
 ## What is formseal-fetch?

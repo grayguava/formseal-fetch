@@ -28,18 +28,30 @@ CYAN   = "\x1b[36m"
 WHITE  = "\x1b[37m"
 GRAY   = "\x1b[90m"
 
-O = "\x1b[38;5;208m"   
-S = "\x1b[38;5;112m"  
-G = "\x1b[38;5;244m"  
-C = "\x1b[38;5;117m"  
-Y = "\x1b[38;5;103m" 
+O = "\x1b[38;5;208m"
+S = "\x1b[38;5;112m"
+G = "\x1b[38;5;244m"
+C = "\x1b[38;5;108m"
+Y = "\x1b[38;5;103m"
 W = WHITE + BOLD
 D = DIM
 R = RESET
 
+HEAD = "🐸"
+OK = "✨"
+TICK = "✔️"
+CROSS = "❌"
+ERR = "😵‍💫"
+
 
 def br():
     print()
+
+
+def header(title=""):
+    vers = f"  {Y}{title}{R}" if title else ""
+    print(f"{C} \u250c\u2500 {HEAD} {R}{W}formseal-fetch{R}{vers}")
+    print(G + " " + "\u2500" * 52 + R)
 
 
 def rule():
@@ -52,7 +64,7 @@ def badge(label, color):
 
 def fail(msg):
     br()
-    print(f"{badge('ERR', RED)} {msg}")
+    print(f"{badge('❌', RED)} {msg}")
     br()
     raise SystemExit(1)
 
@@ -78,7 +90,7 @@ def link(msg):
 
 
 def ok(msg):
-    print(f"  {G}\u2713{R} {msg}")
+    print(f"  {G}✨{R} {msg}")
 
 
 def info(msg):
@@ -86,4 +98,4 @@ def info(msg):
 
 
 def warn(msg):
-    print(f"  {Y}Warning:{R} {msg}")
+    print(f"  {Y}⚠️ {R}{msg}")

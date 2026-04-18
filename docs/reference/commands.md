@@ -22,8 +22,8 @@ fsf connect provider:<name> [namespace:<id>] [token:<value>] [output:<path>]
 
 | Argument | Description |
 |----------|-------------|
-| `provider:<name>` | Storage provider (required) — available: `cloudflare` |
-| `namespace:<id>` | Storage-specific namespace ID (optional) |
+| `provider:<name>` | Storage provider (required) — available: `cloudflare`, `supabase` |
+| `namespace:<id>` | KV Namespace ID (for Cloudflare) or Table Name (for Supabase) |
 | `token:<value>` | API token (optional — you'll be prompted if not provided) |
 | `output:<path>` | Output folder for ciphertexts (optional, default: `data`) |
 
@@ -134,23 +134,33 @@ fsf set output_folder my-data
 ---
 
 ### disconnect
-
 Clear all credentials and configuration.
 
 ```bash
 fsf disconnect
+fsf disconnect --wipe
 ```
 
 **What it removes:**
 
 - Provider configuration
 - API token (from OS Keychain or secrets.json)
-- KV namespace ID (from OS Keychain or secrets.json)
+- Namespace/table ID (from OS Keychain or secrets.json)
 - Configuration file
 
-**What it does NOT remove:**
+**What it does NOT remove (disconnect only):**
 
 - Downloaded ciphertexts in your output folder
+
+**--wipe flag:**
+
+Also deletes your ciphertexts file:
+
+```bash
+fsf disconnect --wipe
+```
+
+This removes everything above PLUS the `ciphertexts.jsonl` file.
 
 **Confirmation:**
 
@@ -171,7 +181,7 @@ fsf providers
 | Provider | Status |
 |----------|--------|
 | Cloudflare KV | Available |
-| Supabase | Coming soon |
+| Supabase | Available |
 
 ---
 

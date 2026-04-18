@@ -82,51 +82,52 @@ def delete_token(provider: str):
     _save_secrets(secrets)
 
 
-def save_namespace(provider: str, namespace: str) -> bool:
-    """Save KV namespace ID to OS keyring. Falls back to JSON."""
+def save_namespace(provider: str, namespace: str, key: str = "kv-namespace") -> bool:
+    """Save namespace ID to OS keyring. Falls back to JSON."""
+    key_name = f"{provider}:{key}"
     if HAS_KEYRING:
         try:
-            keyring.set_password(SERVICE, f"{provider}:kv-namespace", namespace)
+            keyring.set_password(SERVICE, key_name, namespace)
             return True
         except Exception:
             pass
-    
-    # Fallback to JSON file
+
     secrets = _load_secrets()
-    secrets[f"{provider}:namespace"] = base64.b64encode(namespace.encode()).decode()
+    secrets[key_name] = base64.b64encode(namespace.encode()).decode()
     _save_secrets(secrets)
     return True
 
 
-def load_namespace(provider: str) -> str | None:
-    """Load KV namespace ID from OS keyring. Falls back to JSON."""
+def load_namespace(provider: str, key: str = "kv-namespace") -> str | None:
+    """Load namespace ID from OS keyring. Falls back to JSON."""
+    key_name = f"{provider}:{key}"
     if HAS_KEYRING:
         try:
-            namespace = keyring.get_password(SERVICE, f"{provider}:kv-namespace")
+            namespace = keyring.get_password(SERVICE, key_name)
             if namespace:
                 return namespace
         except Exception:
             pass
-    
-    # Fallback to JSON file
+
     secrets = _load_secrets()
-    encoded = secrets.get(f"{provider}:namespace")
+    encoded = secrets.get(key_name)
     if encoded:
         return base64.b64decode(encoded.encode()).decode().strip()
     return None
 
 
-def delete_namespace(provider: str):
+def delete_namespace(provider: str, key: str = "kv-namespace"):
     """Delete namespace from keyring. Falls back to JSON if keyring fails."""
+    key_name = f"{provider}:{key}"
     if HAS_KEYRING:
         try:
-            keyring.delete_password(SERVICE, f"{provider}:kv-namespace")
+            keyring.delete_password(SERVICE, key_name)
             return
         except Exception:
             pass
-    
+
     secrets = _load_secrets()
-    secrets.pop(f"{provider}:namespace", None)
+    secrets.pop(key_name, None)
     _save_secrets(secrets)
 
 
@@ -145,17 +146,18 @@ def token_location(provider: str) -> str:
     return "Not set"
 
 
-def namespace_location(provider: str) -> str:
+def namespace_location(provider: str, key: str = "kv-namespace") -> str:
     """Check where namespace is stored."""
+    key_name = f"{provider}:{key}"
     if HAS_KEYRING:
         try:
-            if keyring.get_password(SERVICE, f"{provider}:kv-namespace"):
+            if keyring.get_password(SERVICE, key_name):
                 return "OS Keychain"
         except Exception:
             pass
-    
+
     secrets = _load_secrets()
-    if f"{provider}:namespace" in secrets:
+    if key_name in secrets:
         return "Config File"
     return "Not set"
 

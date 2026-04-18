@@ -6,7 +6,7 @@ import urllib.error
 import urllib.parse
 from pathlib import Path
 
-from cli.ui import fail, info
+from cli.ui import fail
 
 
 def _get(url, token):
@@ -34,11 +34,11 @@ def _load_seen(output_path) -> set:
     return {line.strip() for line in p.read_text(encoding="utf-8").splitlines() if line.strip()}
 
 
-def fetch(namespace, account_id, token, output_path):
-    """Fetch all values from a KV namespace."""
+def fetch(namespace, token):
+    """Fetch all values from a KV namespace. Returns dict[str, bytes] with single key 'ciphertexts'."""
+    account_id = _get_account_id(token)
     base = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/storage/kv/namespaces/{namespace}"
 
-    # List all keys (paginated)
     all_keys = []
     cursor = None
 
@@ -52,29 +52,29 @@ def fetch(namespace, account_id, token, output_path):
         if not cursor:
             break
 
-    info(f"Found {len(all_keys)} entries")
-
     if not all_keys:
-        info("No data to fetch.")
-        return 0, 0
+        return {"ciphertexts": b""}
 
-    # Deduplicate against existing
-    seen = _load_seen(output_path)
-    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    result = {}
+    for key in all_keys:
+        value = _get_raw(f"{base}/values/{urllib.parse.quote(key, safe='')}", token)
+        if value:
+            result[key] = value.encode("utf-8")
 
-    written = 0
-    skipped = 0
+    return result
 
-    with open(output_path, "a", encoding="utf-8") as f:
-        for key in all_keys:
-            value = _get_raw(f"{base}/values/{urllib.parse.quote(key, safe='')}", token)
-            if not value:
-                continue
-            if value in seen:
-                skipped += 1
-                continue
-            f.write(value + "\n")
-            seen.add(value)
-            written += 1
 
-    return written, skipped
+def _get_account_id(token):
+    url = "https://api.cloudflare.com/client/v4/accounts"
+    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        data = json.loads(resp.read().decode())
+
+    if not data.get("success"):
+        fail(f"Auth failed: {data.get('errors')}")
+
+    accounts = data.get("result", [])
+    if not accounts:
+        fail("No accounts found. Token needs 'Account Settings: Read' scope.")
+
+    return accounts[0]["id"]

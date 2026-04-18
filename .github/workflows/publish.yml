@@ -16,6 +16,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Set version from version.txt
+        run: |
+          VERSION=$(cat version.txt)
+          sed -i "s/version = \".*\"/version = \"$VERSION\"/" pyproject.toml
+
       - name: Build
         run: |
           pip install build

@@ -4,7 +4,7 @@ import json
 import sys
 from pathlib import Path
 
-from cli.ui import br, fail, ok, info, warn, G, W, D, C, Y, R
+from cli.ui import br, fail, ok, info, warn, G, W, D, C, Y, R, HEAD, header
 from cli.security import tokens
 from cli.providers import get_provider, get_providers
 
@@ -78,8 +78,7 @@ def run_status():
     cfg = load_config()
 
     br()
-    print(f"{C} \u250c\u2500 {R}{W}formseal-fetch{R}  {Y}v{VERSION}{R}")
-    print(G + " " + "\u2500" * 52 + R)
+    header(VERSION)
     br()
 
     print(f"  {D}Configuration Status:{R}")
@@ -99,22 +98,26 @@ def run_status():
     row("Provider:", provider.display_name if provider else provider_name)
 
     if provider:
-        for field in provider.get_config_fields():
-            key = field["key"]
-            value = tokens.load_namespace(provider_name)
-            row(f"{field.get('prompt', key)}:", value or "(not set)", W if value else D)
-
-        if value:
-            row("NS-ID Location:", tokens.namespace_location(provider_name), G)
+        schema = provider.get_config_schema()
+        for key, field_schema in schema.items():
+            sensitive = field_schema.get("sensitive", True)
+            if sensitive:
+                value = tokens.load_namespace(provider_name, key=key)
+            else:
+                value = cfg.get(key)
+            desc = field_schema.get("description", key)
+            row(f"{desc}:", value or "(not set)", W if value else D)
 
         token = get_token(provider_name)
         if token:
-            try:
-                account_id = provider.authenticate(token)
-                partial = account_id[:12] + "..." if len(account_id) > 12 else account_id
-                row("Account ID:", partial, G)
-            except Exception:
-                row("Account ID:", "(auth error)", R)
+            extra = {}
+            if hasattr(provider, "get_status_extra"):
+                try:
+                    extra = provider.get_status_extra(token, cfg)
+                except Exception:
+                    pass
+            for label, value in extra.items():
+                row(f"{label}:", value)
             row("API Token:", "****")
             row("Token Location:", tokens.token_location(provider_name), G)
         else:
@@ -122,7 +125,8 @@ def run_status():
             row("Token Location:", "Not set", D)
 
         br()
-        row("Server Storage Type:", provider.storage_type)
+        storage_type = getattr(provider, 'storage_label', provider.storage_type)
+        row("Storage Type:", storage_type)
 
     output_folder = cfg.get("output_folder")
     row("Output Folder:", output_folder or "(not set)", W if output_folder else D)
@@ -134,8 +138,7 @@ def run_config_show():
     cfg = load_config()
 
     br()
-    print(f"{C} \u250c\u2500 {R}{W}formseal-fetch{R}  {G}config{R}")
-    print(G + " " + "\u2500" * 52 + R)
+    header("config")
     br()
 
     provider = cfg.get("provider")
@@ -153,32 +156,50 @@ def run_config_show():
     br()
 
 
-def run_disconnect():
-    br()
-    print(f"  {Y}This will delete all config and credentials.{R}")
-    print(f"  Downloaded ciphertexts will NOT be affected.")
+def run_disconnect(args=None):
+    args = args or []
+    wipe = "--wipe" in args
+
+    if wipe:
+        br()
+        print(f"  {Y}THIS WILL DELETE EVERYTHING.{R}")
+        print(f"  Config, credentials, AND ciphertexts will be deleted.")
+    else:
+        br()
+        print(f"  {Y}This will delete all config and credentials.{R}")
+        print(f"  Downloaded ciphertexts will NOT be affected.")
     br()
     sys.stdout.write(f"  Continue? [y/N]: ")
     sys.stdout.flush()
     confirm = input().strip().lower()
-    
+
     if confirm != "y":
         br()
         info("Cancelled.")
         br()
         return
-    
+
     cfg = load_config()
     provider = cfg.get("provider")
-    
+
+    if wipe:
+        output_folder = cfg.get("output_folder")
+        if output_folder:
+            ciphertext_path = Path(output_folder) / "ciphertexts.jsonl"
+            if ciphertext_path.exists():
+                ciphertext_path.unlink()
+
     if CONFIG_FILE.exists():
         CONFIG_FILE.unlink()
-    
+
     if provider:
         tokens.clear_all(provider)
-    
+
     br()
-    ok("Disconnected. All config and credentials cleared.")
+    if wipe:
+        ok("Disconnected. Everything wiped.")
+    else:
+        ok("Disconnected. All config and credentials cleared.")
     br()
 
 

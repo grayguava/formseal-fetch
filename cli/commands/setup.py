@@ -3,7 +3,7 @@
 import sys
 from pathlib import Path
 
-from cli.ui import br, fail, ok, info, warn, G, W, D, C, Y, O, R
+from cli.ui import br, fail, ok, info, warn, G, W, D, C, Y, O, R, HEAD, OK, header
 from cli.commands.config import load_config, save_config
 from cli.security import tokens
 from cli.providers import get_providers
@@ -25,6 +25,10 @@ def run(args):
 
     parsed = _parse_args(args)
 
+    cfg = load_config()
+    if cfg.get("provider"):
+        fail(f"Provider already set: {cfg['provider']}\nRun 'fsf disconnect' first.")
+
     if "provider" not in parsed:
         fail("provider is required.\n           Usage: fsf connect provider:<name> [...]")
 
@@ -38,18 +42,17 @@ def run(args):
 
 def _setup_flow(provider, parsed, provider_obj):
     print()
-    print(f"{C} \u250c\u2500 {R}{W}formseal-fetch{R}  {G}setup{R}")
-    print(G + " " + "\u2500" * 52 + R)
+    header("setup")
     print()
 
     cfg = load_config()
     cfg["provider"] = provider
 
-    fields = provider_obj.get_config_fields()
+    schema = provider_obj.get_config_schema()
 
-    for field in fields:
-        key = field["key"]
-        prompt = field.get("prompt", key)
+    for key, field_schema in schema.items():
+        prompt = field_schema.get("description", key)
+        sensitive = field_schema.get("sensitive", True)
 
         value = parsed.get(key)
         if not value:
@@ -63,17 +66,22 @@ def _setup_flow(provider, parsed, provider_obj):
                 br()
                 return
 
-        if field.get("required") and not value:
+        if field_schema.get("required") and not value:
             fail(f"{prompt} is required")
 
         if value:
-            tokens.save_namespace(provider, value)
+            if sensitive:
+                tokens.save_namespace(provider, value, key=key)
+            else:
+                cfg[key] = value
+
+    _token_label = "Service Role Key" if provider == "supabase" else "API Token"
 
     if "token" in parsed:
         token = parsed["token"]
     else:
         try:
-            sys.stdout.write("  API Token: ")
+            sys.stdout.write(f"  {_token_label}: ")
             sys.stdout.flush()
             token = sys.stdin.readline().strip()
         except KeyboardInterrupt:
@@ -105,12 +113,18 @@ def _setup_flow(provider, parsed, provider_obj):
             br()
             return
 
-    cfg["output_folder"] = output_folder
+    output_folder = Path(output_folder).resolve()
+    try:
+        output_folder.mkdir(parents=True, exist_ok=True)
+    except Exception as e:
+        fail(f"Invalid output folder: {e}")
+
+    cfg["output_folder"] = str(output_folder)
     print()
 
     save_config(cfg)
 
-    print(f"{G} \u2713{R} Saved!")
+    print(f"{G}{OK}{R} Saved!")
     print()
     print(f"  Run {W}fsf fetch{R} to download ciphertexts")
     print()

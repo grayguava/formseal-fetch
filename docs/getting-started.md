@@ -27,10 +27,18 @@ pip install -e .
 ### Verify installation
 
 ```bash
-fsf --help
+fsf
+# or
+fsf --about
 ```
 
-You should see the command help output.
+You should see the about page with version info.
+
+```bash
+fsf providers
+```
+
+Shows available storage backends.
 
 ## Quick start
 
@@ -41,14 +49,24 @@ fsf connect provider:<name>
 ```
 
 You'll be prompted for provider-specific credentials:
-- **Namespace ID**: Your storage namespace identifier
-- **API Token**: Your API token with read permissions
-- **Output Folder**: Where to save downloaded ciphertexts (default: `data`)
+
+**For Cloudflare:**
+- KV Namespace ID
+- API Token
+- Output folder (default: `data`)
+
+**For Supabase:**
+- Project Reference
+- Table Name
+- Service Role Key
+- Output folder (default: `data`)
 
 You can also provide these non-interactively:
 
 ```bash
-fsf connect provider:<name> namespace:<id> token:<value> output:<path>
+fsf connect provider:cloudflare namespace:<id> token:<value> output:<path>
+# or
+fsf connect provider:supabase project_ref:<ref> table:<name> token:<key> output:<path>
 ```
 
 ### Step 2: Fetch ciphertexts
@@ -57,7 +75,7 @@ fsf connect provider:<name> namespace:<id> token:<value> output:<path>
 fsf fetch
 ```
 
-This downloads all encrypted form submissions from your storage namespace to `data/ciphertexts.jsonl`. Each line is a raw ciphertext string (no JSON wrapper), one per line.
+This downloads all encrypted form submissions from your storage namespace to `/ciphertexts.jsonl`. Each line is a raw ciphertext string (no JSON wrapper), one per line.
 
 ### Step 3: Check connection and configuration status
 
@@ -70,5 +88,7 @@ Shows your current provider, namespace ID, token location, and output folder.
 ## Next steps
 
 - See [Commands reference](./reference/commands.md) for all available commands
+- [Cloudflare KV setup](./backends/cloudflare-kv.md)
+- [Supabase setup](./backends/supabase.md)
 - Read [Security](./security.md) to understand how credentials are stored
 - Check [Troubleshooting](./troubleshooting.md) if you encounter issues

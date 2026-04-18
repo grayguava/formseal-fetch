@@ -1,36 +1,41 @@
-# formseal-fetch
+<p align="center">
+  <img src="fsf.png" alt="formseal-fetch">
+</p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/python-3.8+-3776ab?style=flat&labelColor=1e293b">
+  <img src="https://img.shields.io/pypi/v/formseal-fetch?style=flat&label=pypi&labelColor=1e293b&color=3776ab">
   <img src="https://img.shields.io/badge/license-MIT-fc8181?style=flat&labelColor=1e293b">
+  <img src="https://img.shields.io/github/actions/workflow/status/grayguava/formseal-fetch/publish.yml">
   <img src="https://img.shields.io/badge/formseal-ecosystem-10b981?style=flat&labelColor=1e293b">
 </p>
 
-Download encrypted form submissions from your storage backend.
+<p align="center">
+  Download encrypted form submissions from your storage backend.
+</p>
 
-## What it does
+---
 
-```
-Browser (formseal-embed)
-       │
-       ▼ (encrypted submissions)
-  Storage (Cloudflare KV / Supabase / ...)
-       │
-       ▼ (fsf fetch)
-  ciphertexts.jsonl ──► Your PC
-```
+formseal-fetch pulls ciphertexts stored by your backend down to your machine. Nothing is decrypted in transit or on the server — only the holder of the private key can read submissions.
 
-## Install
+formseal-fetch is not a hosted service or dashboard. It is a CLI fetch utility.
+
+---
+
+## Installation
+
+**Via pipx (recommended)**
 
 ```bash
 pipx install formseal-fetch
 ```
 
-Or with pip:
+**Via pip**
 
 ```bash
 pip install formseal-fetch
 ```
+
+---
 
 ## Quick start
 
@@ -40,37 +45,59 @@ fsf fetch
 fsf status
 ```
 
-## Features
+---
 
-- **Secure storage** : Credentials stored in OS keychain (Windows Credential Manager / macOS Keychain / Linux Secret Service)
-- **Deduplication** : Skips already-downloaded ciphertexts automatically
+## How it works
+
+```
+Browser (formseal-embed)
+       │
+       ▼ (encrypted submissions)
+ Cloudflare KV / Supabase / any other server
+       │
+       ▼ (fsf fetch)
+  ciphertexts.jsonl ──► Your PC
+```
+
+Your backend stores opaque ciphertext only. `fsf fetch` downloads it. Decryption happens separately, offline, with your private key.
+
+---
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
+| `fsf` | Show about / info |
 | `fsf connect` | Connect to a storage provider |
 | `fsf fetch` | Download ciphertexts |
 | `fsf status` | Show connection info |
-| `fsf disconnect` | Clear all credentials |
+| `fsf disconnect` | Clear credentials |
+| `fsf disconnect --wipe` | Clear everything including ciphertexts |
+| `fsf providers` | List available backends |
 
-Run `fsf --help` for all commands.
+Run `fsf --help` for all options.
+
+---
 
 ## Security
 
-Your API tokens never leave your machine.formseal-fetch:
-- Stores credentials in your OS keychain (encrypted at rest)
+Your API tokens never leave your machine. formseal-fetch:
+
+- Stores credentials in your OS keychain (Windows Credential Manager / macOS Keychain / Linux Secret Service)
 - Makes direct API calls to your storage backend only
 - Sends no telemetry, has no analytics
+- Skips already-downloaded ciphertexts automatically
+
+---
 
 ## Documentation
-
-Detailed guides: [docs/](./docs/)
 
 - [Getting Started](./docs/getting-started.md)
 - [Security](./docs/security.md)
 - [Commands Reference](./docs/reference/commands.md)
 - [Troubleshooting](./docs/troubleshooting.md)
+
+---
 
 ## License
 
