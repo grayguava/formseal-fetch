@@ -20,5 +20,13 @@ dependencies = [
 fsf = "cli.fsf:main"
 
 [tool.setuptools]
-packages = ["cli", "cli.commands", "cli.providers", "cli.providers.cloudflare", "cli.providers.cloudflare.storage", "cli.providers.local", "cli.security"]
+packages = [
+    "cli",
+    "cli.commands",
+    "cli.providers",
+    "cli.providers.cloudflare",
+    "cli.providers.cloudflare.storage",
+    "cli.providers.supabase",
+    "cli.security"
+]
 include-package-data = true
