@@ -18,12 +18,7 @@ from cli.providers import get_providers
 
 
 def _load_version():
-    if getattr(sys, 'frozen', False):
-        base = Path(sys._MEIPASS)
-    else:
-        base = Path(__file__).parent.parent
-    
-    p = base / "version.txt"
+    p = Path(__file__).parent / "version.txt"
     if p.exists():
         return p.read_text().strip()
     return "dev"

@@ -29,4 +29,6 @@ packages = [
     "cli.providers.supabase",
     "cli.security"
 ]
-include-package-data = true
+
+[tool.setuptools.package-data]
+cli = ["version.txt"]

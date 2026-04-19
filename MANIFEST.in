@@ -1,1 +1,1 @@
-include version.txt
+include cli/version.txt

@@ -7,8 +7,10 @@ import urllib.error
 
 from cli.ui import fail
 
+# Columns to always skip when auto-detecting ciphertext column
 _SKIP_COLS = {"id", "created_at", "updated_at", "inserted_at"}
 
+# Looks like base64url ciphertext (long, no spaces)
 _BASE64URL_RE = re.compile(r'^[A-Za-z0-9+/=_\-]{40,}$')
 
 

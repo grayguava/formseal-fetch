@@ -18,7 +18,7 @@ jobs:
 
       - name: Set version from version.txt
         run: |
-          VERSION=$(cat version.txt)
+          VERSION=$(cat cli/version.txt)
           sed -i "s/version = \".*\"/version = \"$VERSION\"/" pyproject.toml
 
       - name: Build
