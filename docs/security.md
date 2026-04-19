@@ -37,9 +37,12 @@ Run `fsf status` — it shows "OS Keychain" or "Config File" next to token/names
 | Data | Stored As | Location |
 |------|-----------|----------|
 | API Token | Encrypted | OS Keychain (preferred) or secrets.json |
-| KV Namespace ID | Encrypted | OS Keychain (preferred) or secrets.json |
-| Provider name | Plaintext | ~/.config/formseal-fetch/config.json |
-| Output folder path | Plaintext | ~/.config/formseal-fetch/config.json |
+| Namespace/Table ID | Encrypted | OS Keychain or config.json (if non-sensitive) |
+| Provider name | Plaintext | config.json |
+| Output folder path | Plaintext | config.json |
+| Project Reference | Plaintext | config.json (Supabase) |
+
+**Note**: Some fields (project_ref, table name for Supabase; namespace for Cloudflare) are stored in config.json as they're non-sensitive identifiers.
 
 ## Clearing credentials
 

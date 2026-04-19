@@ -1,0 +1,60 @@
+name: 📄 Documentation Issue
+description: Something in the docs is missing, wrong, or unclear
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the docs! The formseal-fetch documentation lives in [`docs/`](https://github.com/grayguava/formseal-fetch/tree/main/docs).
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this hasn't been reported
+          required: true
+
+  - type: dropdown
+    id: doc_type
+    attributes:
+      label: What kind of documentation issue is this?
+      options:
+        - Incorrect information
+        - Missing information
+        - Unclear or confusing wording
+        - Broken link
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Where is the issue?
+      description: Link to the specific doc page or file, or describe where it is.
+      placeholder: e.g. docs/troubleshooting.md, or the README install section
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: What does it currently say / show?
+      description: Quote the relevant section, or describe the problem area.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should it say or include?
+      description: Your suggested fix or the information that's missing.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Any other context that would help.

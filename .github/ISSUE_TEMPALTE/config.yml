@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation
+    url: https://github.com/grayguava/formseal-fetch/tree/main/docs
+    about: Browse the full formseal-fetch documentation
+  - name: 🔧 Troubleshooting Guide
+    url: https://github.com/grayguava/formseal-fetch/blob/main/docs/troubleshooting.md
+    about: Common issues and how to fix them

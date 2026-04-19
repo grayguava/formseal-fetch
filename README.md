@@ -99,6 +99,14 @@ Your API tokens never leave your machine. formseal-fetch:
 
 ---
 
+## Contributing
+
+Contributions welcome! See [contributing.md](./contributing.md) for how to add providers and contribute code.
+
+Please star the repo if you find formseal-fetch useful.
+
+---
+
 ## License
 
 MIT

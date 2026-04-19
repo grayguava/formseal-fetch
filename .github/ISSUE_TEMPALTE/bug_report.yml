@@ -1,0 +1,104 @@
+name: 🐛 Bug Report
+description: Something isn't working as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the sections below.
+        Before submitting, check the [troubleshooting guide](https://github.com/grayguava/formseal-fetch/blob/main/docs/troubleshooting.md) and search existing issues.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this hasn't been reported
+          required: true
+        - label: I checked the [troubleshooting docs](https://github.com/grayguava/formseal-fetch/blob/main/docs/troubleshooting.md)
+          required: true
+        - label: I am using the latest version of formseal-fetch
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+      placeholder: When I run `fsf fetch`, it...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+      placeholder: I expected it to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Step-by-step instructions to trigger the bug.
+      placeholder: |
+        1. Run `fsf connect provider:cloudflare`
+        2. Enter credentials
+        3. Run `fsf fetch`
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: error_output
+    attributes:
+      label: Full error output / traceback
+      description: Paste the complete terminal output. Do not truncate.
+      render: shell
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install_method
+    attributes:
+      label: How did you install formseal-fetch?
+      options:
+        - pipx install formseal-fetch
+        - pip install formseal-fetch
+        - From source (pipx install -e .)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: fsf_version
+    attributes:
+      label: formseal-fetch version
+      description: Run `fsf` with no arguments and paste the version shown in the header.
+      placeholder: e.g. v2.2.0
+    validations:
+      required: true
+
+  - type: input
+    id: python_version
+    attributes:
+      label: Python version
+      description: Run `python --version`
+      placeholder: e.g. 3.11.4
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: e.g. Windows 11, macOS 14, Ubuntu 22.04
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Additional context, workarounds you've tried, related issues, etc.
