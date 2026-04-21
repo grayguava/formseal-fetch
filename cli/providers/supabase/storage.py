@@ -10,8 +10,8 @@ from cli.ui import fail
 # Columns to always skip when auto-detecting ciphertext column
 _SKIP_COLS = {"id", "created_at", "updated_at", "inserted_at"}
 
-# Looks like base64url ciphertext (long, no spaces)
-_BASE64URL_RE = re.compile(r'^[A-Za-z0-9+/=_\-]{40,}$')
+# Looks like formseal ciphertext: formseal.<base64url>
+_FORMSEAL_RE = re.compile(r'^formseal\.[A-Za-z0-9+/=_\-]+$')
 
 
 def _detect_ciphertext_col(row: dict) -> str | None:
@@ -19,7 +19,7 @@ def _detect_ciphertext_col(row: dict) -> str | None:
     for key, val in row.items():
         if key in _SKIP_COLS:
             continue
-        if isinstance(val, str) and _BASE64URL_RE.match(val):
+        if isinstance(val, str) and _FORMSEAL_RE.match(val):
             return key
     return None
 
@@ -33,23 +33,6 @@ def _get(url, headers):
         fail(f"HTTP {e.code}: {e.read().decode()}")
     except Exception as e:
         fail(f"Fetch failed: {e}")
-
-
-def _find_ciphertext_table(ref, token) -> str:
-    """Find the table containing ciphertext data."""
-    headers = {"Authorization": f"Bearer {token}", "apikey": token}
-    candidates = ["submissions", "ciphertexts", "forms", "data", "responses", "entries"]
-
-    for table in candidates:
-        try:
-            probe_url = f"https://{ref}.supabase.co/rest/v1/{table}?limit=1&select=*"
-            probe = _get(probe_url, headers)
-            if probe and _detect_ciphertext_col(probe[0]):
-                return table
-        except Exception:
-            continue
-
-    fail("No table with ciphertext data found. Tried: submissions, ciphertexts, forms, data, responses")
 
 
 def fetch(ref, token, table):
