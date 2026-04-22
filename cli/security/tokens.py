@@ -30,6 +30,10 @@ def _load_secrets() -> dict:
 
 
 def _save_secrets(secrets: dict):
+    if not secrets:
+        if SECRETS_FILE.exists():
+            SECRETS_FILE.unlink()
+        return
     _ensure_config_dir()
     SECRETS_FILE.write_text(json.dumps(secrets, indent=2))
 

@@ -22,6 +22,7 @@ fsf = "cli.fsf:main"
 [tool.setuptools]
 packages = [
     "cli",
+    "cli.ui",
     "cli.commands",
     "cli.providers",
     "cli.providers.cloudflare",
@@ -31,4 +32,4 @@ packages = [
 ]
 
 [tool.setuptools.package-data]
-cli = ["version.txt"]
+cli = []

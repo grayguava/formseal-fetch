@@ -197,6 +197,55 @@ Displays all available commands grouped by category (Connect, Fetch, Config, Inf
 
 ---
 
+### --version
+
+Show version number.
+
+```bash
+fsf --version
+fsf version
+```
+
+Displays the current version (e.g., `v1.0.0`).
+
+---
+
+### --aliases
+
+Show shorthand aliases.
+
+```bash
+fsf --aliases
+```
+
+Lists all available shorthand flags:
+
+| Short | Canonical |
+|-------|-----------|
+| `-s` | `status` |
+| `-c` | `connect provider:<name>` |
+| `-o` | `fetch --output <path>` |
+| `-pl` | `providers` |
+
+**Examples:**
+
+```bash
+# These are equivalent:
+fsf status
+fsf -s
+
+# Connect with shorthand:
+fsf -c cloudflare
+
+# Fetch to custom output:
+fsf -o my-data.jsonl
+
+# List providers:
+fsf -pl
+```
+
+---
+
 ### --about
 
 Show project information.

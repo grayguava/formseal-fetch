@@ -46,11 +46,11 @@ def fetch(ref, token, table):
     }
 
     # --- Auto-detect ciphertext column ---
-    probe = _get(f"{base_url}?limit=1&select=*", headers)
+    probe = _get(f"{base_url}?limit=10&select=*", headers)
     if not probe:
         return {"ciphertexts": b""}
 
-    col = _detect_ciphertext_col(probe[0])
+    col = next((c for row in probe if (c := _detect_ciphertext_col(row))), None)
     if not col:
         fail(f"Could not detect ciphertext column in table '{table}'. "
              f"Columns found: {list(probe[0].keys())}")
@@ -70,7 +70,7 @@ def fetch(ref, token, table):
         for row in data:
             row_id = row.get("id", f"row_{offset}")
             row_data = row.get(col, "")
-            if row_data:
+            if row_data and _FORMSEAL_RE.match(row_data):
                 result[row_id] = row_data.encode("utf-8")
 
         if len(data) < limit:

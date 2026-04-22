@@ -4,7 +4,8 @@ import argparse
 from pathlib import Path
 
 from cli.ui import br, fail, ok, info, G, W, D, C, R, Y, HEAD, header
-from cli.commands.config import load_config, VERSION
+from cli.commands import VERSION
+from cli.commands.config import load_config
 from cli.security import tokens
 from cli.providers import get_provider
 
@@ -28,7 +29,7 @@ def run(args):
     provider_config = _build_provider_config(provider, provider_name)
 
     br()
-    header(VERSION)
+    header()
     br()
 
     def row(label, value, color=W):

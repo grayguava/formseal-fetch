@@ -5,18 +5,9 @@ import sys
 from pathlib import Path
 
 from cli.ui import br, fail, ok, info, warn, G, W, D, C, Y, R, HEAD, header
+from cli.commands import VERSION
 from cli.security import tokens
 from cli.providers import get_provider, get_providers
-
-
-def _load_version():
-    p = Path(__file__).parent.parent.parent / "version.txt"
-    if p.exists():
-        return p.read_text().strip()
-    return "dev"
-
-
-VERSION = _load_version()
 
 
 CONFIG_DIR = Path.home() / ".config" / "formseal-fetch"
@@ -78,7 +69,7 @@ def run_status():
     cfg = load_config()
 
     br()
-    header(VERSION)
+    header()
     br()
 
     print(f"  {D}Configuration Status:{R}")
