@@ -17,19 +17,22 @@ dependencies = [
 ]
 
 [project.scripts]
-fsf = "cli.fsf:main"
+fsf = "fsf.fsf:main"
 
 [tool.setuptools]
 packages = [
-    "cli",
-    "cli.ui",
-    "cli.commands",
-    "cli.providers",
-    "cli.providers.cloudflare",
-    "cli.providers.cloudflare.storage",
-    "cli.providers.supabase",
-    "cli.security"
+    "fsf",
+    "fsf.general",
+    "fsf.ui",
+    "fsf.commands",
+    "fsf.commands.general",
+    "fsf.commands.fetch",
+    "fsf.commands.connect",
+    "fsf.commands.config",
+    "fsf.providers",
+    "fsf.providers.cloudflare",
+    "fsf.providers.cloudflare.storage",
+    "fsf.providers.supabase",
+    "fsf.security"
 ]
 
-[tool.setuptools.package-data]
-cli = []

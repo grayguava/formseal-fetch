@@ -1,0 +1,44 @@
+name: Inject Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version override (optional)'
+        required: false
+        default: ''
+
+jobs:
+  inject:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          if [ -z "$VERSION" ]; then
+            VERSION=$(cat version.txt)
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update version.py
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          sed -i "s/VERSION = \".*\"/VERSION = \"$VERSION\"/" fsf/commands/general/version.py
+
+      - name: Update pyproject.toml
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          sed -i "s/version = \".*\"/version = \"$VERSION\"/" pyproject.toml
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A
+          git commit -m "chore: bumb version to ${{ steps.version.outputs.version }}" || echo "No changes to commit"
+          git push

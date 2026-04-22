@@ -46,7 +46,7 @@ fsf connect provider:supabase
 You'll be prompted for:
 - Project Reference
 - Table Name
-- Service Role Key (shows as "Service Role Key" prompt)
+- Token (label from provider config)
 - Output folder (default: `data`)
 
 ### Non-interactive mode

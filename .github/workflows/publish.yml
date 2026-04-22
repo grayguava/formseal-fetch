@@ -1,7 +1,10 @@
 name: Publish to PyPI
 
 on:
-  workflow_dispatch:
+  workflow_run:
+    workflows: [Prepare Release]
+    types: [completed]
+    branches: [main]
 
 permissions:
   id-token: write
@@ -9,17 +12,13 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Set version from version.txt
-        run: |
-          VERSION=$(cat version.txt)
-          sed -i "s/version = \".*\"/version = \"$VERSION\"/" pyproject.toml
 
       - name: Build
         run: |

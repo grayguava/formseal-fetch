@@ -15,7 +15,7 @@ fsf <command> [options] [arguments]
 Connect to a storage backend.
 
 ```bash
-fsf connect provider:<name> [namespace:<id>] [token:<value>] [output:<path>]
+fsf connect provider:<name> [field:<value>]...
 ```
 
 **Arguments:**
@@ -23,9 +23,7 @@ fsf connect provider:<name> [namespace:<id>] [token:<value>] [output:<path>]
 | Argument | Description |
 |----------|-------------|
 | `provider:<name>` | Storage provider (required) — available: `cloudflare`, `supabase` |
-| `namespace:<id>` | KV Namespace ID (for Cloudflare) or Table Name (for Supabase) |
-| `token:<value>` | API token (optional — you'll be prompted if not provided) |
-| `output:<path>` | Output folder for ciphertexts (optional, default: `data`) |
+| `field:<value>` | Provider-specific fields (see provider docs) |
 
 **Examples:**
 
@@ -34,18 +32,8 @@ fsf connect provider:<name> [namespace:<id>] [token:<value>] [output:<path>]
 fsf connect provider:<name>
 
 # Non-interactive — all values provided via arguments
-fsf connect provider:<name> namespace:<id> token:<value> output:<path>
-
-# Specify only namespace, enter token interactively
-fsf connect provider:<name> namespace:<id>
+fsf connect provider:<name> field:<value> field:<value>
 ```
-
-**Interactive prompts:**
-
-When running without all arguments, you'll be prompted for:
-1. KV Namespace ID (required for Cloudflare)
-2. Account API Token (required)
-3. Output Folder (optional, default: `data`)
 
 Press `Ctrl+C` at any prompt to cancel.
 
@@ -75,15 +63,6 @@ fsf fetch
 fsf fetch --output my-data.jsonl
 ```
 
-**Output format:**
-
-Ciphertexts are saved as plain text — one raw ciphertext per line, no JSON formatting:
-
-```
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-eyJraWQiOiIxMjM0NTY3ODkwIn0...
-```
-
 **Deduplication:**
 
 If you run `fsf fetch` multiple times, duplicates are automatically skipped based on ciphertext content. The output shows:
@@ -102,11 +81,9 @@ fsf status
 
 **Output includes:**
 
-- Provider name (e.g., "Cloudflare")
-- KV Namespace ID (truncated)
-- Storage location (OS Keychain or Config File)
-- Account ID (truncated from API)
-- API Token status (**** if set)
+- Provider name and display name
+- Provider-specific fields (from config)
+- Token status and storage location
 - Output folder path
 
 ---
@@ -134,6 +111,7 @@ fsf set output_folder my-data
 ---
 
 ### disconnect
+
 Clear all credentials and configuration.
 
 ```bash
@@ -145,7 +123,7 @@ fsf disconnect --wipe
 
 - Provider configuration
 - API token (from OS Keychain or secrets.json)
-- Namespace/table ID (from OS Keychain or secrets.json)
+- Provider-specific fields (from OS Keychain or secrets.json)
 - Configuration file
 
 **What it does NOT remove (disconnect only):**
@@ -154,17 +132,11 @@ fsf disconnect --wipe
 
 **--wipe flag:**
 
-Also deletes your ciphertexts file:
-
 ```bash
 fsf disconnect --wipe
 ```
 
-This removes everything above PLUS the `ciphertexts.jsonl` file.
-
-**Confirmation:**
-
-You'll be prompted to confirm with `y` or `n`. Press `Enter` to cancel.
+This removes everything above PLUS the ciphertexts file.
 
 ---
 
@@ -176,13 +148,6 @@ List available storage backends.
 fsf providers
 ```
 
-**Currently supported:**
-
-| Provider | Status |
-|----------|--------|
-| Cloudflare KV | Available |
-| Supabase | Available |
-
 ---
 
 ### --help
@@ -192,8 +157,6 @@ Show help information.
 ```bash
 fsf --help
 ```
-
-Displays all available commands grouped by category (Connect, Fetch, Config, Info).
 
 ---
 
@@ -205,8 +168,6 @@ Show version number.
 fsf --version
 fsf version
 ```
-
-Displays the current version (e.g., `v1.0.0`).
 
 ---
 
@@ -227,23 +188,6 @@ Lists all available shorthand flags:
 | `-o` | `fetch --output <path>` |
 | `-pl` | `providers` |
 
-**Examples:**
-
-```bash
-# These are equivalent:
-fsf status
-fsf -s
-
-# Connect with shorthand:
-fsf -c cloudflare
-
-# Fetch to custom output:
-fsf -o my-data.jsonl
-
-# List providers:
-fsf -pl
-```
-
 ---
 
 ### --about
@@ -253,5 +197,3 @@ Show project information.
 ```bash
 fsf --about
 ```
-
-Displays version and repository URL.
