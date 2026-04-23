@@ -30,6 +30,8 @@ jobs:
           python-version: '3.11'
 
       - name: Build
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           echo "::group::Installing build dependencies"
           pip install build
@@ -37,7 +39,7 @@ jobs:
           echo "::group::Building package"
           python -m build
           echo "::endgroup::"
-          echo "::notice::Build complete for v${{ steps.version.outputs.version }}"
+          echo "::notice::Build complete for v$VERSION"
 
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1

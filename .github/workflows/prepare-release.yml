@@ -26,8 +26,10 @@ jobs:
 
       - name: Check if tag exists
         id: tag
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          TAG="v${{ steps.version.outputs.version }}"
+          TAG="v$VERSION"
           if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "$TAG"; then
             echo "exists=true" >> $GITHUB_OUTPUT
             echo "::warning::Tag $TAG already exists — skipping tag creation"
@@ -38,8 +40,10 @@ jobs:
 
       - name: Create tag
         if: ${{ steps.tag.outputs.exists == 'false' }}
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          TAG="v${{ steps.version.outputs.version }}"
+          TAG="v$VERSION"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git tag -a "$TAG" -m "chore(release): tag $TAG for PyPI publish and GitHub release"
