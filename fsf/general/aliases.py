@@ -3,7 +3,7 @@
 
 ALIASES = {
     "-s": "status",
-    "-pl": "providers",
+    "-p": "providers",
     "-c": "connect",
     "-o": ["fetch", "--output"],
 }

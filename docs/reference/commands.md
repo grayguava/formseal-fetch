@@ -15,24 +15,24 @@ fsf <command> [options] [arguments]
 Connect to a storage backend.
 
 ```bash
-fsf connect provider:<name> [field:<value>]...
+fsf connect <name> [field:value]...
 ```
 
 **Arguments:**
 
 | Argument | Description |
 |----------|-------------|
-| `provider:<name>` | Storage provider (required) — available: `cloudflare`, `supabase` |
+| `<name>` | Storage provider — available: `cloudflare`, `supabase`, `redis` |
 | `field:<value>` | Provider-specific fields (see provider docs) |
 
 **Examples:**
 
 ```bash
 # Interactive mode — you'll be prompted for all required values
-fsf connect provider:<name>
+fsf connect <name>
 
 # Non-interactive — all values provided via arguments
-fsf connect provider:<name> field:<value> field:<value>
+fsf connect <name> field:<value> field:<value>
 ```
 
 Press `Ctrl+C` at any prompt to cancel.
@@ -184,9 +184,9 @@ Lists all available shorthand flags:
 | Short | Canonical |
 |-------|-----------|
 | `-s` | `status` |
-| `-c` | `connect provider:<name>` |
+| `-c` | `connect <name>` |
 | `-o` | `fetch --output <path>` |
-| `-pl` | `providers` |
+| `-p` | `providers` |
 
 ---
 

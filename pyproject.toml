@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "formseal-fetch"
-version = "2.4.0"
+version = "0.0.0"
 description = "CLI tool for fetching encrypted form submissions"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -14,6 +14,7 @@ authors = [
 ]
 dependencies = [
     "keyring>=25.0",
+    "redis>=5.0",
 ]
 
 [project.scripts]
@@ -33,6 +34,7 @@ packages = [
     "fsf.providers.cloudflare",
     "fsf.providers.cloudflare.storage",
     "fsf.providers.supabase",
+    "fsf.providers.redis",
     "fsf.security"
 ]
 

@@ -40,7 +40,7 @@ The service_role key bypasses RLS and can read all rows.
 ### Interactive mode
 
 ```bash
-fsf connect provider:supabase
+fsf connect supabase
 ```
 
 You'll be prompted for:
@@ -52,13 +52,13 @@ You'll be prompted for:
 ### Non-interactive mode
 
 ```bash
-fsf connect provider:supabase project_ref:<ref> table:<name> token:<key> output:<path>
+fsf connect supabase project_ref:<ref> table:<name> token:<key> output:<path>
 ```
 
 **Example:**
 
 ```bash
-fsf connect provider:supabase project_ref:abcd1234 table:submissions token:eyJhbGci... output:data
+fsf connect supabase project_ref:abcd1234 table:submissions token:eyJhbGci... output:data
 ```
 
 ## Fetching ciphertexts

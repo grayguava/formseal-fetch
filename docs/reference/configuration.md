@@ -35,13 +35,11 @@ Created when you run `fsf connect`. Contains non-sensitive configuration:
 
 ### Modifying configuration
 
-Use `fsf set` to change configuration values:
+Edit `config.json` directly or reconnect with different values:
 
 ```bash
-fsf set output_folder my-folder
+fsf connect <name>
 ```
-
-Or edit `config.json` directly (not recommended).
 
 ## secrets.json
 

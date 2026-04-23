@@ -1,5 +1,4 @@
 {
-  "name": "supabase",
   "display_name": "⚡️ Supabase",
   "storage_type": "PostgreSQL",
   "token_label": "Service Role Key",
@@ -15,13 +14,6 @@
       "description": "Table name",
       "required": true,
       "sensitive": false
-    }
-  ],
-  "output": [
-    {
-      "name": "ciphertexts",
-      "description": "Encrypted form ciphertexts",
-      "format": "jsonl"
     }
   ]
 }

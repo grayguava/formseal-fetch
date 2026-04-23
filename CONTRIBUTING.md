@@ -1,6 +1,6 @@
 # Contributing to formseal-fetch
 
-Thanks for your interest in contributing! Contributions of all kinds are welcome — bug fixes, new features, docs, and more. Provider contributions are especially valued since the tool is designed to be backend-agnostic.
+Thanks for your interest in contributing! Contributions of all kinds are welcome — bug fixes, new features, docs, and more. **Provider and security contributions are especially valued since the tool is designed to be backend-agnostic.**
 
 ---
 

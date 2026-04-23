@@ -10,27 +10,30 @@ from fsf.providers import get_providers
 
 
 def _parse_args(args):
-    parsed = {}
-    for arg in args:
+    if not args:
+        fail("Usage: fsf connect <provider> [key:value ...]")
+    
+    provider = args[0].lower()
+    parsed = {"provider": provider}
+    
+    for arg in args[1:]:
         if ":" not in arg:
-            fail(f"Invalid format: {arg}\n           Use flag:value (e.g., provider:<name>)")
+            fail(f"Invalid format: {arg}\n           Use key:value (e.g., field:value)")
         key, value = arg.split(":", 1)
         parsed[key] = value
+    
     return parsed
 
 
 def run(args):
     if not args:
-        fail("Usage: fsf connect provider:<name> [key:value ...]")
+        fail("Usage: fsf connect <provider> [key:value ...]")
 
     parsed = _parse_args(args)
 
     cfg = load_config()
     if cfg.get("provider"):
         fail(f"Provider already set: {cfg['provider']}\nRun 'fsf disconnect' first.")
-
-    if "provider" not in parsed:
-        fail("provider is required.\n           Usage: fsf connect provider:<name> [...]")
 
     provider = parsed["provider"].lower()
     providers = get_providers()
@@ -77,27 +80,27 @@ def _setup_flow(provider, parsed, provider_obj):
                 cfg[key] = value
 
     token_label = provider_obj.get_token_label()
+    if token_label:
+        if "token" in parsed:
+            token = parsed["token"]
+        else:
+            try:
+                sys.stdout.write(f"  {token_label}: ")
+                sys.stdout.flush()
+                token = sys.stdin.readline().strip()
+            except KeyboardInterrupt:
+                br()
+                info("Cancelled.")
+                br()
+                return
+            if not token:
+                fail(f"{token_label} is required")
 
-    if "token" in parsed:
-        token = parsed["token"]
-    else:
-        try:
-            sys.stdout.write(f"  {token_label}: ")
-            sys.stdout.flush()
-            token = sys.stdin.readline().strip()
-        except KeyboardInterrupt:
-            br()
-            info("Cancelled.")
-            br()
-            return
+        token = "".join(c for c in token if c.isprintable()).strip()
         if not token:
             fail(f"{token_label} is required")
 
-    token = "".join(c for c in token if c.isprintable()).strip()
-    if not token:
-        fail(f"{token_label} is required")
-
-    tokens.save_token(provider, token)
+        tokens.save_token(provider, token)
 
     if "output" in parsed:
         output_folder = parsed["output"]

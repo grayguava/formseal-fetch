@@ -26,7 +26,7 @@ Browser (formseal-embed)
 
 ## What fsf does
 
-- Connects to storage backends (Cloudflare KV, Supabase)
+- Connects to storage backends (Cloudflare KV, Supabase, Redis)
 - Downloads ciphertexts to `ciphertexts.jsonl`
 - Skips duplicates automatically
 - Never sends data to any server except your storage backend

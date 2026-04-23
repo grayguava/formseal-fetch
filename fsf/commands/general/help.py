@@ -8,7 +8,7 @@ from fsf.ui.styles import C, G, R, W, GRAY
 def _get_help_groups():
     return {
         "Connect": [
-            ("fsf connect provider:<name>", "connect to a storage provider"),
+            ("fsf connect <name>", "connect to a storage provider"),
             ("fsf disconnect", "clear configuration"),
             ("fsf disconnect --wipe", "clear everything including ciphertexts"),
         ],
@@ -16,11 +16,8 @@ def _get_help_groups():
             ("fsf fetch", "download ciphertexts"),
             ("fsf fetch --output <file>", "custom output path"),
         ],
-        "Config": [
-            ("fsf status", "show configuration"),
-            ("fsf set <key> <value>", "set config value"),
-        ],
         "Info": [
+            ("fsf status", "show configuration"),
             ("fsf providers", "list available providers"),
             ("fsf --version", "show version"),
             ("fsf --aliases", "list shorthand flags"),
@@ -62,5 +59,5 @@ def run_aliases():
     print(f" {W}-s{R}     {G}status{R}")
     print(f" {W}-c{R}     {G}connect{R}")
     print(f" {W}-o{R}     {G}fetch --output <path>{R}")
-    print(f" {W}-pl{R}    {G}providers{R}")
+    print(f" {W}-p{R}     {G}providers{R}")
     br()

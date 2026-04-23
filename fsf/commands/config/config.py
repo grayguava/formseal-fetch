@@ -34,37 +34,6 @@ def get_namespace(provider: str):
     return tokens.load_namespace(provider)
 
 
-def run_set(args):
-    if len(args) < 2:
-        fail("Usage: fsf set <key> <value>")
-
-    key = args[0]
-    value = " ".join(args[1:])
-
-    cfg = load_config()
-    providers = get_providers()
-
-    if key == "provider":
-        if value not in providers:
-            fail(f"Unknown provider: {value}\nValid: {', '.join(providers.keys())}")
-        cfg["provider"] = value
-        save_config(cfg)
-        br()
-        ok(f"Provider set to {value}")
-        br()
-        return
-
-    if key == "output_folder":
-        cfg[key] = value
-        save_config(cfg)
-        br()
-        ok(f"Set {key} = {value}")
-        br()
-        return
-
-    fail(f"Unknown key: {key}")
-
-
 def run_status():
     cfg = load_config()
 
@@ -97,18 +66,17 @@ def run_status():
             else:
                 value = cfg.get(key)
             desc = field.get("description", key)
-            row(f"{desc}:", value or "(not set)", W if value else D)
+            if value:
+                if sensitive:
+                    trunc = value[:8] + "***" if len(str(value)) > 8 else str(value)
+                else:
+                    trunc = str(value)
+            else:
+                trunc = "(not set)"
+            row(f"{desc}:", trunc, W if value else D)
 
         token = get_token(provider_name)
         if token:
-            extra = {}
-            if hasattr(provider, "get_status_extra"):
-                try:
-                    extra = provider.get_status_extra(token, cfg)
-                except Exception:
-                    pass
-            for label, value in extra.items():
-                row(f"{label}:", value)
             row("Token Location:", tokens.token_location(provider_name), G)
         else:
             row("Token Location:", "Not set", D)

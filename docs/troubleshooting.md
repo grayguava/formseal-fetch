@@ -33,17 +33,17 @@ pip install keyring
 
 ## 2. Connection issues
 
-### "No provider configured. Run: fsf connect provider:<name>"
+### "No provider configured. Run: fsf connect <name>"
 
 **Cause**: Never connected or configuration deleted.
 
 **Solution**:
 
 ```bash
-fsf connect provider:<name>
+fsf connect <name>
 ```
 
-### "No token. Run: fsf connect provider:<name> to set token"
+### "No token. Run: fsf connect <name> to set token"
 
 **Cause**: Connected but no API token stored.
 
@@ -51,10 +51,10 @@ fsf connect provider:<name>
 
 ```bash
 # Reconnect to store a new token
-fsf connect provider:<name> token:<value>
+fsf connect <name> token:<value>
 ```
 
-### "Invalid format: ... Use flag:value (e.g., provider:<name>)"
+### "Invalid format: ... Use flag:value (e.g., <name>)"
 
 **Cause**: Incorrect argument syntax.
 
@@ -62,7 +62,7 @@ fsf connect provider:<name> token:<value>
 
 ```bash
 # Correct
-fsf connect provider:<name> namespace:<id>
+fsf connect <name> namespace:<id>
 
 # Incorrect
 fsf connect provider=<name>
@@ -83,7 +83,7 @@ fsf connect provider=<name>
 
 ```bash
 fsf disconnect
-fsf connect provider:<name> token:<value>
+fsf connect <name> token:<value>
 ```
 
 ### "No accounts found. Token needs 'Account Settings: Read' scope"
@@ -112,17 +112,17 @@ fsf connect provider:<name> token:<value>
 fsf status
 
 # If token shows as "not set" or "Config File", reconnect
-fsf connect provider:<name> token:<value>
+fsf connect <name> token:<value>
 ```
 
-### "No namespace. Run: fsf connect provider:<name> to set namespace"
+### "No namespace. Run: fsf connect <name> to set namespace"
 
 **Cause**: Namespace ID not stored.
 
 **Solution**:
 
 ```bash
-fsf connect provider:<name> namespace:<id>
+fsf connect <name> namespace:<id>
 ```
 
 ### "Fetch failed: HTTP 403"
@@ -168,7 +168,8 @@ To verify keyring works, see [Security](../security.md).
 fsf status
 
 # Change to a folder you have write access to
-fsf set output_folder ~/formseal-data
+# Create a new connection with different output path
+fsf connect <name> output:<path>
 ```
 
 ### File written but empty

@@ -42,24 +42,24 @@ Your token must have these permissions:
 ### Interactive mode
 
 ```bash
-fsf connect provider:cloudflare
+fsf connect cloudflare
 ```
 
 You'll be prompted for:
-- KV Namespace ID
+- KV Namespace ID (non-sensitive)
 - Token (label from provider config)
 - Output folder (default: `data`)
 
 ### Non-interactive mode
 
 ```bash
-fsf connect provider:cloudflare namespace:<id> token:<value> output:<path>
+fsf connect cloudflare namespace:<id> token:<value> output:<path>
 ```
 
 **Example:**
 
 ```bash
-fsf connect provider:cloudflare namespace:<id> token:<value> output:data
+fsf connect cloudflare namespace:<id> token:<value> output:data
 ```
 
 ## Fetching ciphertexts

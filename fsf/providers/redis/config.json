@@ -1,0 +1,13 @@
+{
+  "display_name": "🗄️ Redis",
+  "storage_type": "Redis DB",
+  "token_label": "Redis URL",
+  "inputs": [
+    {
+      "name": "key_prefix",
+      "description": "Key prefix",
+      "required": false,
+      "sensitive": false
+    }
+  ]
+}

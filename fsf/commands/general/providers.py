@@ -22,6 +22,8 @@ def _list_providers():
     br()
 
     for name, provider in providers.items():
-        print(f"    {W}>  {provider.display_name}:{R}   {provider.description}")
+        name_part = f"    {W}>  {provider.display_name}:{R}"
+        visible = f"    >  {provider.display_name}:"
+        print(name_part + " " * (25 - len(visible)) + f"{provider.storage_type}")
 
     br()

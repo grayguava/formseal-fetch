@@ -10,13 +10,20 @@ Welcome to the formseal-fetch documentation.
 | [Security](./security.md) | How credentials are stored and protected |
 | [Commands Reference](./reference/commands.md) | All available commands |
 | [Configuration](./reference/configuration.md) | Config files and storage |
-| [Cloudflare KV](./backends/cloudflare-kv.md) | Cloudflare backend setup |
-| [Supabase](./backends/supabase.md) | Supabase backend setup |
+| [Cloudflare KV](./backends/cloudflare-kv.md) | Cloudflare KV backend |
+| [Supabase](./backends/supabase.md) | Supabase backend |
+| [Redis](./backends/redis.md) | Redis backend |
 | [Troubleshooting](./troubleshooting.md) | Common issues and solutions |
 
 ## What is formseal-fetch?
 
-formseal-fetch is a CLI tool that downloads encrypted form submissions from your storage backend (currently we only support Cloudflare KV). Use it together with [formseal-embed](https://github.com/grayguava/formseal-embed) — the client-side form encryption library.
+formseal-fetch is a CLI tool that downloads encrypted form submissions from your storage backend. Use it together with [formseal-embed](https://github.com/grayguava/formseal-embed) — the client-side form encryption library.
+
+## Supported backends
+
+- Cloudflare KV
+- Supabase
+- Redis
 
 ## Workflow
 
@@ -24,7 +31,7 @@ formseal-fetch is a CLI tool that downloads encrypted form submissions from your
 Browser (formseal-embed)
        │
        ▼ (encrypted submissions)
-  Cloudflare KV
+  Storage backend
        │
        ▼ (fsf fetch)
   ciphertexts.jsonl ──► Your PC

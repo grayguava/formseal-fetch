@@ -45,10 +45,10 @@ Shows available storage backends.
 ### Step 1: Connect to your backend
 
 ```bash
-fsf connect provider:<name>
+fsf connect <name>
 ```
 
-You'll be prompted for provider-specific credentials:
+You'll be prompted for provider-specific credentials.
 
 **For Cloudflare:**
 - KV Namespace ID
@@ -61,12 +61,17 @@ You'll be prompted for provider-specific credentials:
 - Service Role Key
 - Output folder (default: `data`)
 
+**For Redis:**
+- Redis URL
+- Key prefix
+- Output folder (default: `data`)
+
 You can also provide these non-interactively:
 
 ```bash
-fsf connect provider:cloudflare namespace:<id> token:<value> output:<path>
-# or
-fsf connect provider:supabase project_ref:<ref> table:<name> token:<key> output:<path>
+fsf connect cloudflare namespace:<id> token:<value> output:<path>
+fsf connect supabase project_ref:<ref> table:<name> token:<key> output:<path>
+fsf connect redis key_prefix:<prefix> output:<path>
 ```
 
 ### Step 2: Fetch ciphertexts
@@ -75,7 +80,7 @@ fsf connect provider:supabase project_ref:<ref> table:<name> token:<key> output:
 fsf fetch
 ```
 
-This downloads all encrypted form submissions from your storage namespace to `/ciphertexts.jsonl`. Each line is a raw ciphertext string (no JSON wrapper), one per line.
+This downloads all encrypted form submissions from your storage to `<output_folder>/ciphertexts.jsonl`. Each line is a raw ciphertext string, one per line.
 
 ### Step 3: Check connection and configuration status
 
@@ -83,12 +88,13 @@ This downloads all encrypted form submissions from your storage namespace to `/c
 fsf status
 ```
 
-Shows your current provider, namespace ID, token location, and output folder.
+Shows your current provider, credentials, and output folder.
 
 ## Next steps
 
 - See [Commands reference](./reference/commands.md) for all available commands
 - [Cloudflare KV setup](./backends/cloudflare-kv.md)
 - [Supabase setup](./backends/supabase.md)
+- [Redis setup](./backends/redis.md)
 - Read [Security](./security.md) to understand how credentials are stored
 - Check [Troubleshooting](./troubleshooting.md) if you encounter issues
