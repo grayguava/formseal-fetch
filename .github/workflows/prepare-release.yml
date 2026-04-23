@@ -2,7 +2,7 @@ name: Prepare Release
 
 on:
   workflow_run:
-    workflows: [Inject Version]
+    workflows: [Publish to PyPI]
     types: [completed]
     branches: [main]
 
@@ -14,32 +14,41 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Read version
         id: version
         run: |
           VERSION=$(cat version.txt)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "::notice::Preparing release for v$VERSION"
 
-      - name: Check tag exists
+      - name: Check if tag exists
         id: tag
         run: |
           TAG="v${{ steps.version.outputs.version }}"
-          if git rev-parse "refs/tags/$TAG" >/dev/null 2>&1; then
+          if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "$TAG"; then
             echo "exists=true" >> $GITHUB_OUTPUT
+            echo "::warning::Tag $TAG already exists — skipping tag creation"
           else
             echo "exists=false" >> $GITHUB_OUTPUT
+            echo "::notice::Tag $TAG does not exist yet — will create"
           fi
 
       - name: Create tag
-        if: ${{ !steps.tag.outputs.exists }}
+        if: ${{ steps.tag.outputs.exists == 'false' }}
         run: |
           TAG="v${{ steps.version.outputs.version }}"
-          git tag -a "$TAG" -m "Release $TAG"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git tag -a "$TAG" -m "chore(release): tag $TAG for PyPI publish and GitHub release"
           git push origin "$TAG"
+          echo "::notice::Created and pushed tag $TAG"
 
-      - name: Create or update release
+      - name: Create or update draft release
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           TAG="v$VERSION"
@@ -48,17 +57,17 @@ jobs:
           - Updated to v$VERSION
           EOF
           )
-          # Check if release exists
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release edit "$TAG" --title "Release $TAG" --notes "$BODY"
+            echo "::notice::Release $TAG exists — updating"
+            gh release edit "$TAG" \
+              --title "Release $TAG" \
+              --notes "$BODY" \
+              --draft
           else
-            gh release create "$TAG" --title "Release $TAG" --notes "$BODY" --draft
+            echo "::notice::Creating draft release $TAG"
+            gh release create "$TAG" \
+              --title "Release $TAG" \
+              --notes "$BODY" \
+              --draft
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Trigger publish
-        run: |
-          gh workflow run publish.yml -f version=${{ steps.version.outputs.version }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          echo "::notice::Draft release $TAG is ready"
