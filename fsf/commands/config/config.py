@@ -134,7 +134,7 @@ def run_config_show():
     if not cfg:
         info("No config. Run: fsf connect provider:<name>")
     else:
-        for k, v in cfg.items():
+        for k, v in cfg.items():  # lgtm[py/clear-text-logging-sensitive-data] cfg never contains tokens; they are stored separately via tokens.save_token
             print(f"  {D}{k}:{R}  {W}{v}{R}")
 
     if provider:
