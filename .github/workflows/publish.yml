@@ -18,6 +18,9 @@ jobs:
         with:
           ref: main
 
+      - name: Pull latest  
+        run: git pull origin main
+
       - name: Read version
         id: version
         run: |
