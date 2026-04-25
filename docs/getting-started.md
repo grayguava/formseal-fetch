@@ -80,7 +80,7 @@ fsf connect redis key_prefix:<prefix> output:<path>
 fsf fetch
 ```
 
-This downloads all encrypted form submissions from your storage to `<output_folder>/ciphertexts.jsonl`. Each line is a raw ciphertext string, one per line.
+This downloads all encrypted form submissions from your storage to `<output_folder>/formseal.ct.jsonl`. Each line is a raw ciphertext string, one per line.
 
 ### Step 3: Check connection and configuration status
 

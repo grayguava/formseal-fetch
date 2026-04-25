@@ -34,5 +34,5 @@ Browser (formseal-embed)
   Storage backend
        │
        ▼ (fsf fetch)
-  ciphertexts.jsonl ──► Your PC
+  formseal.ct.jsonl ──► Your PC
 ```

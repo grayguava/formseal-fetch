@@ -13,7 +13,7 @@ Browser (formseal-embed)
        ▼ (ciphertext storage)
   fsf fetch (download ciphertexts)
        │
-       ▼ (ciphertexts.jsonl)
+       ▼ (formseal.ct.jsonl)
   You (decrypt offline)
 ```
 
@@ -27,7 +27,7 @@ Browser (formseal-embed)
 ## What fsf does
 
 - Connects to storage backends (Cloudflare KV, Supabase, Redis)
-- Downloads ciphertexts to `ciphertexts.jsonl`
+- Downloads ciphertexts to `formseal.ct.jsonl`
 - Skips duplicates automatically
 - Never sends data to any server except your storage backend
 - Credentials stored in OS keychain

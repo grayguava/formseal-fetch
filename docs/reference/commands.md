@@ -51,7 +51,7 @@ fsf fetch [--output <path>]
 
 | Option | Description |
 |--------|-------------|
-| `--output` | Custom output file path (default: `<output_folder>/ciphertexts.jsonl`) |
+| `--output` | Custom output file path (default: `<output_folder>/formseal.ct.jsonl`) |
 
 **Examples:**
 

@@ -67,7 +67,7 @@ fsf connect supabase project_ref:abcd1234 table:submissions token:eyJhbGci... ou
 fsf fetch
 ```
 
-Ciphertexts are saved to `<output_folder>/ciphertexts.jsonl` — one raw ciphertext per line.
+Ciphertexts are saved to `<output_folder>/formseal.ct.jsonl` — one raw ciphertext per line.
 
 ## Verifying connection
 

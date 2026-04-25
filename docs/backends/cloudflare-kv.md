@@ -68,7 +68,7 @@ fsf connect cloudflare namespace:<id> token:<value> output:data
 fsf fetch
 ```
 
-Ciphertexts are saved to `data/ciphertexts.jsonl` — one raw ciphertext per line.
+Ciphertexts are saved to `data/formseal.ct.jsonl` — one raw ciphertext per line.
 
 ## Verifying connection
 

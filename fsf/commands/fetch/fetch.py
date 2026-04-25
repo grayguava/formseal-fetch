@@ -58,7 +58,7 @@ def run(args):
         br()
         return
 
-    output_path = parsed.output or f"{output_folder}/ciphertexts.jsonl"
+    output_path = parsed.output or f"{output_folder}/formseal.ct.jsonl"
 
     written, skipped = _write_files(files, output_path)
 

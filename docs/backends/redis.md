@@ -58,7 +58,7 @@ fsf connect redis key_prefix:submissions output:data
 fsf fetch
 ```
 
-Ciphertexts are saved to `<output_folder>/ciphertexts.jsonl` — one raw ciphertext per line.
+Ciphertexts are saved to `<output_folder>/formseal.ct.jsonl` — one raw ciphertext per line.
 
 ## Verifying connection
 
